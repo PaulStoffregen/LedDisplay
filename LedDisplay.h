@@ -42,13 +42,6 @@
 #include "WProgram.h"
 #endif
 
-// Pascal Stang's 5x7 font library:
-#include "font5x7.h"
-// The font library is stored in prgram memory:
-#include <avr/pgmspace.h>
-// string functions used to manipulate strings:
-#include <string.h>
-
 // Arduino Print library provides print() and println() functionality 
 #include "Print.h"
 
