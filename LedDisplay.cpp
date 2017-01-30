@@ -51,8 +51,7 @@ LedDisplay::LedDisplay(uint8_t _dataPin,
 	this->resetPin = _resetPin;         		// the display's reset pin
 	this->displayLength = _displayLength;    	// number of bytes needed to pad the string
 	this->cursorPos = 0;						// position of the cursor in the display
-	char stringBuffer[displayLength+1];			// default array that the displayString will point to
-	
+
 	// fill stringBuffer with spaces, and a trailing 0:
 	for (int i = 0; i < displayLength; i++) {
 		stringBuffer[i] = ' ';

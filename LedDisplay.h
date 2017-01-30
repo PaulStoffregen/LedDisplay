@@ -102,6 +102,7 @@ class LedDisplay : public Print {
 	uint8_t chipEnable;       	// the display's chip enable pin
 	uint8_t resetPin;         	// the display's reset pin
 	uint8_t displayLength;    	// number of bytes needed to pad the string
+	char stringBuffer[9];     	// buffer to hold initial display string
 	char* displayString;		// string for scrolling
 };
 
