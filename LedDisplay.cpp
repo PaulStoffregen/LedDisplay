@@ -5,6 +5,7 @@
    
    Revisions on version 0.2 and 0.3 by Mark Liebman, 27 Jan 2010
     * extended a bit to support up to four (4) 8 character displays.
+   vim: set ts=4:
   
   Controls an Avago HCMS29xx display. This display has 8 characters, each 5x7 LEDs
    
@@ -51,6 +52,8 @@ LedDisplay::LedDisplay(uint8_t _dataPin,
 	this->resetPin = _resetPin;         		// the display's reset pin
 	this->displayLength = _displayLength;    	// number of bytes needed to pad the string
 	this->cursorPos = 0;						// position of the cursor in the display
+
+	if (_displayLength > 8) _displayLength = 8;
 
 	// fill stringBuffer with spaces, and a trailing 0:
 	for (int i = 0; i < displayLength; i++) {
@@ -152,9 +155,11 @@ void LedDisplay::write(uint8_t b) {
 	if (cursorPos >= 0 && cursorPos < displayLength) {	
 		// put the character into the dot register:
 		writeCharacter(b, cursorPos);
-		// put the character into the displayString:
-		if (cursorPos < this->stringLength()) {
-			this->displayString[cursorPos] = b;
+		// put the character into the displayBuffer
+		// but do not write the string constants pass
+		// to us from the user by setString()
+		if (this->displayString == stringBuffer && cursorPos < 8) {
+			stringBuffer[cursorPos] = b;
 		}		
 		cursorPos++;	
 		// send the dot register array out to the display:
@@ -202,7 +207,7 @@ void LedDisplay::scroll(int direction) {
  * 	set displayString
  */
 
-void LedDisplay::setString(char* _displayString)  {
+void LedDisplay::setString(const char * _displayString)  {
 	this->displayString = _displayString;
 }
 
@@ -211,7 +216,7 @@ void LedDisplay::setString(char* _displayString)  {
  * 	return displayString
  */
 
-char* LedDisplay::getString() {
+const char * LedDisplay::getString() {
 	return displayString;
 }
 

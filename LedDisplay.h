@@ -6,7 +6,7 @@
  
    Revisions on version 0.2 and 0.3 by Mark Liebman, 27 Jan 2010
     * extended a bit to support up to four (4) 8 character displays.
- 
+  vim: set ts=4:
    
   Controls an Avago HCMS29xx display. This display has 8 characters, each 5x7 LEDs
    
@@ -73,8 +73,8 @@ class LedDisplay : public Print {
 #endif
 	using Print::write;
 	
-	void setString(char* _stringToDisplay);		// set the displayString variable
-	char* getString();							// get the displayString
+	void setString(const char* _stringToDisplay);	// set the displayString variable
+	const char * getString();						// get the displayString
 	int stringLength();							// get the length of displayString
 
 	void scroll(int direction);			// scroll whatever string is stored in library's displayString variable
@@ -103,7 +103,7 @@ class LedDisplay : public Print {
 	uint8_t resetPin;         	// the display's reset pin
 	uint8_t displayLength;    	// number of bytes needed to pad the string
 	char stringBuffer[9];     	// buffer to hold initial display string
-	char* displayString;		// string for scrolling
+	const char * displayString;	// string for scrolling
 };
 
 #endif
