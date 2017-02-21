@@ -36,37 +36,54 @@ LedDisplay myDisplay = LedDisplay(dataPin, registerSelect, clockPin,
 
 int brightness = 15;        // screen brightness
 
-int myDirection = 1;        // direction of scrolling. -1 = left, 1 = right.
-
 String displayString;        // the string currently being displayed
 String bufferString;         // the buffer for receiving incoming characters
 
 void setup() {
   Serial.begin(9600);
   // set an initial string to display:
-  displayString = "Hello World!";
+  displayString = "Use the Arduino Serial Monitor to send a new string.";
 
   // initialize the display library:
   myDisplay.begin();
   // set the display string, speed,and brightness:
-  myDisplay.setString(displayString);
+  myDisplay.setString(displayString.c_str());
   myDisplay.setBrightness(brightness);
 }
 
 void loop() {
   // get new data in from the serial port:
-  while (Serial.available()>0) {
+  while (Serial.available() > 0) {
     // read in new serial:
     getSerial();
-  } 
+  }
 
   // srcoll left and right:
-  if ((myDisplay.getCursor() > 8) ||
-    (myDisplay.getCursor() <= -(myDisplay.stringLength()))) {
+  /*if ((myDisplay.getCursor() >= 0) ||
+    (myDisplay.getCursor() <= -(myDisplay.stringLength() - 8))) {
     myDirection = -myDirection;
     delay(1000);
   }
-  myDisplay.scroll(myDirection);
+*/
+  if (myDisplay.getCursor() <= -(myDisplay.stringLength() - 8)) {
+    // when the string reaches the end, stop and then fade out
+    delay(500);
+    for (int n=brightness; n >= 0; n--) {
+      myDisplay.setBrightness(n);
+      delay(50);
+    }
+    // start the string back from the beginning
+    myDisplay.setCursor(0);
+    myDisplay.scroll(0);
+    // fade back in
+    for (int n=1; n <= brightness; n++) {
+      myDisplay.setBrightness(n);
+      delay(25);
+    }
+    delay(500);
+    return;
+  }
+  myDisplay.scroll(-1); // direction of scrolling. -1 = left, 1 = right.
   delay(100);
 
 }
@@ -76,12 +93,14 @@ void getSerial() {
   int inByte = Serial.read();
   switch (inByte) {
   case '\n':
-:
+  case '\r':
     // if you get a newline,
     // copy the buffer into the displayString:
     displayString = bufferString;
     // set the display with the new string:
-    myDisplay.setString(displayString);
+    myDisplay.setString(displayString.c_str());
+    // set the cursor, so the old string fade away now
+    myDisplay.setCursor(-1000);
     // clear the buffer:
     bufferString = "";
     break;
@@ -89,7 +108,9 @@ void getSerial() {
     // if you get any ASCII alphanumeric value
     // (i.e. anything greater than a space), add it to the buffer:
     if (inByte >= ' ') {
-      bufferString.append(char(inByte));
+      if (bufferString.length() < maxStringLength) {
+        bufferString.append(char(inByte));
+      }
     }
     break;
   }
