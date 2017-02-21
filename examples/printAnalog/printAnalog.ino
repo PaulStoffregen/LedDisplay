@@ -40,8 +40,9 @@ void setup() {
 }
 
 void loop() {
-  // set the cursor to 1:
-  myDisplay.setCursor(1);
+  // set the cursor first character
+  myDisplay.home();
   myDisplay.print("A0: ");
   myDisplay.print(analogRead(0), DEC);
+  myDisplay.print("   ");
 }
