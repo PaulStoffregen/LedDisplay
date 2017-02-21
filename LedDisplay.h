@@ -93,9 +93,7 @@ class LedDisplay : public Print {
 																// be sent to the display by loadDotRegister()
 
   	int cursorPos;				// position of the cursor		
-//   	uint8_t dotRegister[40];    // the 320-bit dot register for a single 8 digit LED display
-// 	uint8_t dotRegister[80];    // the pair of 320-bit dot register for two 8 character LED displays
-   	uint8_t dotRegister[160];    // four 320-bit dot registers. 320 for each 8 character LED display 
+	uint8_t dotRegister[40];    // 5 bytes per character * up to 8 characters
 
 	// Define pins for the LED display:
 	uint8_t  dataPin;         	// connects to the display's data in
@@ -104,6 +102,7 @@ class LedDisplay : public Print {
 	uint8_t chipEnable;       	// the display's chip enable pin
 	uint8_t resetPin;         	// the display's reset pin
 	uint8_t displayLength;    	// number of bytes needed to pad the string
+	char stringBuffer[9];     	// buffer to hold initial display string
 	char* displayString;		// string for scrolling
 };
 
