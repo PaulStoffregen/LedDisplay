@@ -1,38 +1,38 @@
 /*
-  HCMS Display 
+  HCMS Display
  Language: Arduino/Wiring
- 
+
  Displays a string on an Avago HCMS-297x display
  Scrolls the current display string as well.
  Anything you send in the serial port is displayed
  when the Arduino receives a newline or carriage return.
- 
+
  String library based on the Wiring String library:
  http://wiring.org.co/learning/reference/String.html
- 
+
  created 12 Jun. 2008
  modified 11 March 2010
  by Tom Igoe
- 
+
  */
 #include <WString.h>
 #include <LedDisplay.h>
 
 #define maxStringLength 180  // max string length
 
-// Define pins for the LED display. 
+// Define pins for the LED display.
 // You can change these, just re-wire your board:
-#define dataPin 2              // connects to the display's data in
-#define registerSelect 3       // the display's register select pin 
-#define clockPin 4             // the display's clock pin
-#define enable 5               // the display's chip enable pin
-#define reset 6               // the display's reset pin
+#define dataPin 6              // connects to the display's data in
+#define registerSelect 7       // the display's register select pin
+#define clockPin 8             // the display's clock pin
+#define enable 9               // the display's chip enable pin
+#define reset 10               // the display's reset pin
 
 #define displayLength 8        // number of chars in the display
 
 // create am instance of the LED display:
-LedDisplay myDisplay = LedDisplay(dataPin, registerSelect, clockPin, 
-enable, reset, displayLength);
+LedDisplay myDisplay = LedDisplay(dataPin, registerSelect, clockPin,
+                                  enable, reset, displayLength);
 
 int brightness = 15;        // screen brightness
 
@@ -59,7 +59,7 @@ void loop() {
     // read in new serial:
     getSerial();
   } 
-  
+
   // srcoll left and right:
   if ((myDisplay.getCursor() > 8) ||
     (myDisplay.getCursor() <= -(myDisplay.stringLength()))) {
@@ -86,7 +86,7 @@ void getSerial() {
     bufferString = "";
     break;
   default:
-    // if you get any ASCII alphanumeric value 
+    // if you get any ASCII alphanumeric value
     // (i.e. anything greater than a space), add it to the buffer:
     if (inByte >= ' ') {
       bufferString.append(char(inByte));
