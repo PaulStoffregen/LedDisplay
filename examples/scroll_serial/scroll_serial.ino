@@ -109,7 +109,7 @@ void getSerial() {
     // (i.e. anything greater than a space), add it to the buffer:
     if (inByte >= ' ') {
       if (bufferString.length() < maxStringLength) {
-        bufferString.append(char(inByte));
+        bufferString.concat(char(inByte));
       }
     }
     break;
