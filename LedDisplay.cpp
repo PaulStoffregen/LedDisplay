@@ -53,7 +53,10 @@ LedDisplay::LedDisplay(uint8_t _dataPin,
 	this->displayLength = _displayLength;    	// number of bytes needed to pad the string
 	this->cursorPos = 0;						// position of the cursor in the display
 
-	if (_displayLength > 8) _displayLength = 8;
+	// do not allow a long multiple display to use more than LEDDISPLAY_MAXCHARS
+	if (_displayLength > LEDDISPLAY_MAXCHARS) {
+		_displayLength = LEDDISPLAY_MAXCHARS;
+	}
 
 	// fill stringBuffer with spaces, and a trailing 0:
 	for (unsigned int i = 0; i < sizeof(stringBuffer); i++) {
@@ -157,7 +160,7 @@ void LedDisplay::write(uint8_t b) {
 		// put the character into the displayBuffer
 		// but do not write the string constants pass
 		// to us from the user by setString()
-		if (this->displayString == stringBuffer && cursorPos < 8) {
+		if (this->displayString == stringBuffer && cursorPos < LEDDISPLAY_MAXCHARS) {
 			stringBuffer[cursorPos] = b;
 		}		
 		cursorPos++;	
