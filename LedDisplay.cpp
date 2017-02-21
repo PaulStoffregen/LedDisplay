@@ -32,21 +32,21 @@
 #include "font5x7.h"
 // The font library is stored in program memory:
 #include <avr/pgmspace.h>
-#include <string.h> 
+#include <string.h>
 
 /*
  * 	Constructor.  Initializes the pins and the instance variables.
  */
-LedDisplay::LedDisplay(uint8_t _dataPin, 
-					   uint8_t _registerSelect, 
-					   uint8_t _clockPin, 
-					   uint8_t _chipEnable, 
-					   uint8_t _resetPin, 
+LedDisplay::LedDisplay(uint8_t _dataPin,
+					   uint8_t _registerSelect,
+					   uint8_t _clockPin,
+					   uint8_t _chipEnable,
+					   uint8_t _resetPin,
 					   uint8_t _displayLength)
 {
 	// Define pins for the LED display:
 	this->dataPin = _dataPin;         			// connects to the display's data in
-	this->registerSelect = _registerSelect;   	// the display's register select pin 
+	this->registerSelect = _registerSelect;   	// the display's register select pin
 	this->clockPin = _clockPin;        			// the display's clock pin
 	this->chipEnable = _chipEnable;       		// the display's chip enable pin
 	this->resetPin = _resetPin;         		// the display's reset pin
@@ -56,10 +56,9 @@ LedDisplay::LedDisplay(uint8_t _dataPin,
 	if (_displayLength > 8) _displayLength = 8;
 
 	// fill stringBuffer with spaces, and a trailing 0:
-	for (int i = 0; i < displayLength; i++) {
+	for (unsigned int i = 0; i < sizeof(stringBuffer); i++) {
 		stringBuffer[i] = ' ';
 	}
-	stringBuffer[displayLength] = '\0';
 	
 	this->setString(stringBuffer);				// give displayString a default buffer
 }
@@ -67,7 +66,7 @@ LedDisplay::LedDisplay(uint8_t _dataPin,
 /*
  * 	Initialize the display.
  */
- 
+
 void LedDisplay::begin() {
  // set pin modes for connections:
   pinMode(dataPin, OUTPUT);
@@ -96,7 +95,7 @@ void LedDisplay::begin() {
   loadControlRegister(B01111111);
   loadControlRegister(B01111111);
   // set control register 1 so all 8 characters display:
- // loadControlRegister(B10000001); 
+ // loadControlRegister(B10000001);
 
 
 
@@ -105,12 +104,12 @@ void LedDisplay::begin() {
 /*
  * 	Clear the display
  */
- 
+
 void LedDisplay::clear() {
- for (int displayPos = 0; displayPos < displayLength; displayPos++) {
- 	char charToShow = ' ';
-	  // put the character in the dot register:
-	writeCharacter(charToShow, displayPos);  
+	this->setString(stringBuffer);
+	for (int displayPos = 0; displayPos < displayLength; displayPos++) {
+		// put the character in the dot register:
+		writeCharacter(' ', displayPos);
 	}
 
 	// send the dot register array out to the display:
@@ -177,26 +176,25 @@ void LedDisplay::write(uint8_t b) {
 
 
 void LedDisplay::scroll(int direction) {
-	clear();
 	cursorPos += direction;
+	//  length of the string to display:
+	int stringEnd = strlen(displayString);
+
 	// Loop over the string and take displayLength characters to write to the display:
    	for (int displayPos = 0; displayPos < displayLength; displayPos++) {
 	  // which character in the strings you want:
 	  int whichCharacter =  displayPos - cursorPos;
-	  //  length of the string to display:
-	  int stringEnd = strlen(displayString);
 	 // which character you want to show from the string:
-	  char charToShow; 
+	  char charToShow;
 	  // display the characters until you have no more:
 	  if ((whichCharacter >= 0) && (whichCharacter < stringEnd)) {
-		charToShow = displayString[whichCharacter]; 
-	  } 
-	  // if none of the above, show a space:
-	  else {
+		charToShow = displayString[whichCharacter];
+	  } else {
+	    // if none of the above, show a space:
 		charToShow = ' ';
 	  }
 	  // put the character in the dot register:
-	  writeCharacter(charToShow, displayPos);  
+	  writeCharacter(charToShow, displayPos);
 	}
 	// send the dot register array out to the display:
 	loadDotRegister();
@@ -237,10 +235,10 @@ int LedDisplay::stringLength() {
  */
 
 	
-void LedDisplay::setBrightness(uint8_t bright) 
+void LedDisplay::setBrightness(uint8_t bright)
 {
 	// set the brightness:
-	loadControlRegister(B01110000 + bright);    
+	loadControlRegister(B01110000 + bright);
 }
 
 
