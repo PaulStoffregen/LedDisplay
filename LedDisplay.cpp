@@ -87,7 +87,7 @@ void LedDisplay::begin() {
   loadDotRegister();
 
   // set control register 0 for max brightness, and no sleep:
-  loadControlRegister(B01111111);
+  loadAllControlRegisters(B01111111);
 }
 
 /*
