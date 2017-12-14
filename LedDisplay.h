@@ -86,7 +86,8 @@ class LedDisplay : public Print {
 	void setBrightness(uint8_t bright);			// set display brightness, 0 - 15
 
 	// Control register setters. for addressing the display directly:
-	void loadControlRegister(int dataByte);
+	void loadControlRegister(uint8_t dataByte);
+	void loadAllControlRegisters(uint8_t dataByte);
 	void loadDotRegister();
 
     int version(void);							// return library version
