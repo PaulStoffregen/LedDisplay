@@ -86,22 +86,8 @@ void LedDisplay::begin() {
   // load dot register with lows
   loadDotRegister();
 
-  loadControlRegister(B10000001); // set serial mode. see table 1, footnote 1
   // set control register 0 for max brightness, and no sleep:
-  // added: ML send multiple inits to 2nd, 3rd, 4th display, etc.
-  // set control register 0 for max brightness, and no sleep:
-  loadControlRegister(B01111111);
-  loadControlRegister(B01111111);
-  loadControlRegister(B01111111);
-  loadControlRegister(B01111111);
-  loadControlRegister(B01111111);
-  loadControlRegister(B01111111);
-  loadControlRegister(B01111111);
-  // set control register 1 so all 8 characters display:
- // loadControlRegister(B10000001);
-
-
-
+  loadAllControlRegisters(B01111111);
 }
 
 /*
@@ -240,8 +226,13 @@ int LedDisplay::stringLength() {
 	
 void LedDisplay::setBrightness(uint8_t bright)
 {
-	// set the brightness:
-	loadControlRegister(B01110000 + bright);
+    // Limit the brightness
+    if (bright > 15) {
+        bright = 15;
+    }
+  
+    // set the brightness:
+    loadAllControlRegisters(B01110000 + bright);
 }
 
 
@@ -263,7 +254,7 @@ void LedDisplay::writeCharacter(char whatCharacter, byte whatPosition) {
 
 
 // This method sends 8 bits to one of the control registers:
-void LedDisplay::loadControlRegister(int dataByte) {
+void LedDisplay::loadControlRegister(uint8_t dataByte) {
   // select the control registers:
   digitalWrite(registerSelect, HIGH);
   // enable writing to the display:
@@ -272,6 +263,36 @@ void LedDisplay::loadControlRegister(int dataByte) {
   shiftOut(dataPin, clockPin, MSBFIRST, dataByte);
   // disable writing:
   digitalWrite(chipEnable, HIGH);
+}
+
+// This method sends 8 bits to the control registers in all chips:
+void LedDisplay::loadAllControlRegisters(uint8_t dataByte) {
+
+  // Each display can have more than one control chip, and displays
+  // can be daisy-chained into long strings. For some operations, such
+  // as setting the brightness, we need to ensure that a single
+  // control word reaches all displays simultaneously. We do this by
+  // putting each chip into simultaneous mode - effectively coupling
+  // all their data-in pins together. (See section "Serial/Simultaneous
+  // Data Output D0" in datasheet.)
+
+
+  // One chip drives four characters, so we compute the number of
+  // chips by diving by four:
+  int chip_count = displayLength / 4;
+
+  // For each chip in the chain, write the control word that will put
+  // it into simultaneous mode (seriel mode is the power-up default).
+  for (int i = 0; i < chip_count; i++) {
+    loadControlRegister(B10000001);
+  }
+
+  // Load the specified value into the control register.
+  loadControlRegister(dataByte);
+
+  // Put all the chips back into serial mode. Because they're still
+  // all in simultaneous mode, we only have to write this word once.
+  loadControlRegister(B10000000);
 }
 
 // this method originally sent 320 bits to the dot register: 12_30_09 ML
