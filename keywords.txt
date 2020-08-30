@@ -23,6 +23,7 @@ setString	KEYWORD2
 getString	KEYWORD2
 stringLength	KEYWORD2
 setBrightness	KEYWORD2
+setBlankPin	KEYWORD2
 writeCharacter	KEYWORD2
 loadControlRegister	KEYWORD2
 loadDotRegister	KEYWORD2

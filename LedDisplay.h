@@ -59,6 +59,7 @@ class LedDisplay : public Print {
 			  uint8_t _clockPin,
 			  uint8_t _chipEnable,
 			  uint8_t _resetPin,
+			  uint8_t _blankPin,
 			  uint8_t _displayLength);
 
 
@@ -84,7 +85,7 @@ class LedDisplay : public Print {
 	void scroll(int direction);			// scroll whatever string is stored in library's displayString variable
 
 	void setBrightness(uint8_t bright);			// set display brightness, 0 - 15
-
+	void setBlankPin(uint16_t blankSel, uint8_t dutyCycle);
 	// Control register setters. for addressing the display directly:
 	void loadControlRegister(uint8_t dataByte);
 	void loadAllControlRegisters(uint8_t dataByte);
@@ -106,6 +107,7 @@ class LedDisplay : public Print {
 	uint8_t clockPin;         	// the display's clock pin
 	uint8_t chipEnable;       	// the display's chip enable pin
 	uint8_t resetPin;         	// the display's reset pin
+	uint8_t blankPin;		// the display's blank pin
 	uint8_t displayLength;    	// number of bytes needed to pad the string
 	char stringBuffer[LEDDISPLAY_MAXCHARS+1];  // buffer to hold initial display string
 	const char * displayString;	// string for scrolling
