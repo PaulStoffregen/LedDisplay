@@ -13,6 +13,7 @@ The displays have a synchronous serial interface. You'll need five digital outpu
     * clock - timing clock from the microcontroller
     * enable - enables or disables the display
     * reset - resets the display 
+    * blank - controls the diplay (on/off) and can set brightness (via PWM)
 
 The library manages all the necessary pin control and data shifting for you.
 
