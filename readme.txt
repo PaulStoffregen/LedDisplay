@@ -4,7 +4,7 @@ Adding features for the blank pin - including PWM (for experimental purposes) --
 
 For details, see http://www.arduino.cc/playground/Main/LedDisplay
 
-This library allows you to send text to an Avago HCMS-29xx LED display. The HCMS 29xx displays are pretty little displays that contain a row of 5x7 LED matrices. 
+This library allows you to send text to an Avago/Broadcom HCMS-29xx/HCMS-39xc LED MATRIX display. The HCMS 29xx/39xx displays are pretty little displays that contain a row of 5x7 LED matrices. 
 
 The displays have a synchronous serial interface. You'll need five digital output lines to control them. The pins are as follows:
 
@@ -13,7 +13,7 @@ The displays have a synchronous serial interface. You'll need five digital outpu
     * clock - timing clock from the microcontroller
     * enable - enables or disables the display
     * reset - resets the display 
-    * blank - controls the diplay (on/off) and can set brightness (via PWM)
+    * blank - controls the display (on/off) and can set brightness (via PWM)
 
 The library manages all the necessary pin control and data shifting for you.
 
