@@ -255,8 +255,8 @@ void LedDisplay::setBrightness(uint8_t bright)
  * 	set blank selection:
  * 	0 - default - pulled low
  * 	1 - high
- * 	2 - tri-state?
- * 	3 - PWM?
+ * 	2 - tri-state? tbd
+ * 	3 - PWM - set desired duty cycle on the blank pin
  * 	4 - PWM Test
  */
 

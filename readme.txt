@@ -22,7 +22,7 @@ LedDisplay(int dataPin, int registerSelect, int clockPin, int chipEnable, int re
 
 example:
 
-   LedDisplay myDisplay = LedDisplay(2,3,4,5,6,8);
+   LedDisplay myDisplay = LedDisplay(2,3,4,5,6,7,8);
 
 begin() - initializes and resets the display.
 
@@ -131,9 +131,25 @@ example:
 
    myDisplay.setBrightness(15);
 
+
+--==--
+
+/*
+ * 	set blankSel selection:
+ * 	0 - default - pulled low
+ * 	1 - high
+ * 	2 - tri-state? tbd
+ * 	3 - PWM - set desired duty cycle on the blank pin
+ * 	4 - PWM Test
+ */
+
 setBlankPin(int blankSel, char dutyCycle);
 
-example myDisplay.setBlankPin(4, 600);   --- this will select a PWM test mode starting at a duty cycle looping from 600 to 1000 and then resets at 0 to dutyCycle. Must be called periodically (like in loop()...).
+example:
+
+   myDisplay.setBlankPin(4, 600);   
+
+   --- this will select a PWM test mode starting at a duty cycle looping from 600 to 1000 and then resets at 0 to dutyCycle. Must be called periodically (like in loop()...).
 
 Can tie low, high, (maybe tri-state?), and set PWM (duty cycle) and duty cycle tests.
 
