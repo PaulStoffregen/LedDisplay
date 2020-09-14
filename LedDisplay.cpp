@@ -28,11 +28,24 @@
 
 #include "LedDisplay.h"
 
+#define USING_PWM_LIB_FOR_TEST_PURPOSES
+#define DBG_PRINT_IN_LIB
+
 // Pascal Stang's 5x7 font library:
 #include "font5x7.h"
 // The font library is stored in program memory:
 #include <avr/pgmspace.h>
 #include <string.h>
+
+#ifdef USING_PWM_LIB_FOR_TEST_PURPOSES
+#include <SAMD21turboPWM.h>
+extern TurboPWM pwm;
+#endif
+
+static uint16_t dutyCycleLocal = 0;		// local duty cycle for PWM of blank signal for HCMS display
+static boolean dutyTestFlag = false;
+static uint8_t duty_step = 10;			// duty cycle step size - maybe make this a parameter?
+static uint16_t duty_MAX = 1000;		// set by lib at this time
 
 /*
  * 	Constructor.  Initializes the pins and the instance variables.
@@ -42,6 +55,7 @@ LedDisplay::LedDisplay(uint8_t _dataPin,
 					   uint8_t _clockPin,
 					   uint8_t _chipEnable,
 					   uint8_t _resetPin,
+					   uint8_t _blankPin,
 					   uint8_t _displayLength)
 {
 	// Define pins for the LED display:
@@ -50,6 +64,7 @@ LedDisplay::LedDisplay(uint8_t _dataPin,
 	this->clockPin = _clockPin;        			// the display's clock pin
 	this->chipEnable = _chipEnable;       		// the display's chip enable pin
 	this->resetPin = _resetPin;         		// the display's reset pin
+	this->blankPin = _blankPin;			// the display's blank pin
 	this->displayLength = _displayLength;    	// number of bytes needed to pad the string
 	this->cursorPos = 0;						// position of the cursor in the display
 
@@ -77,6 +92,7 @@ void LedDisplay::begin() {
   pinMode(clockPin, OUTPUT);
   pinMode(chipEnable, OUTPUT);
   pinMode(resetPin, OUTPUT);
+  pinMode(blankPin, OUTPUT);
 
   // reset the display:
   digitalWrite(resetPin, LOW);
@@ -233,6 +249,85 @@ void LedDisplay::setBrightness(uint8_t bright)
   
     // set the brightness:
     loadAllControlRegisters(B01110000 + bright);
+}
+
+/*
+ * 	set blank selection:
+ * 	0 - default - pulled low
+ * 	1 - high
+ * 	2 - tri-state? tbd
+ * 	3 - PWM - set desired duty cycle on the blank pin
+ * 	4 - PWM Test
+ */
+
+void LedDisplay::setBlankPin(uint16_t blankSel, uint8_t dutyCycle)
+{
+
+	switch ( blankSel )
+	{
+
+		case 0:		// blank pulled low - this is default
+			digitalWrite(blankPin, LOW);
+			break;
+
+		case 1:
+			digitalWrite(blankPin, HIGH);
+			break;
+
+		case 2:				// tri-state possible?  Look at uC data sheet - TBD
+			break;
+
+		case 3:
+			pwm.analogWrite(blankPin, dutyCycle);  // requires PWM lib
+			break;
+
+//			static uint16_t dutyCycleLocal = 0;		// local duty cycle for PWM of blank signal for HCMS display
+//			static bool dutyTestFlag = FALSE;
+			
+
+		case 4:				// for testing - will cycle from dutyCycle passed - step, then back to zero - and wrap as long as called
+			if ( dutyTestFlag == false )
+			{
+				dutyCycleLocal = dutyCycle;
+				dutyTestFlag = true;	// doing dutyCycle test
+			//    pwm.analogWrite(blankPin, dutyCycleLocal);
+			//    dutyCycleLocal += duty_step;
+			}
+			if (dutyTestFlag)
+			{
+				pwm.analogWrite(blankPin, dutyCycleLocal);
+
+				dutyCycleLocal += duty_step;
+
+				if (dutyCycleLocal > duty_MAX )
+				{	
+					dutyCycleLocal = 0;
+				}
+
+				if ( dutyCycleLocal == dutyCycle )
+				{
+					dutyTestFlag = false;
+				}
+
+			}
+#ifdef DBG_PRINT_IN_LIB			
+			Serial.print(dutyCycleLocal);
+			Serial.println( " %");
+#endif			
+			break;
+			
+			    
+
+		default:
+			digitalWrite(blankPin, LOW);	// if we fall through
+			break;
+
+	}
+	
+#if 0
+    // 
+	loadAllControlRegisters(B01110000 + _);
+#endif	
 }
 
 
